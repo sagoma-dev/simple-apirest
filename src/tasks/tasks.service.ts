@@ -29,4 +29,14 @@ export class TasksService {
 
     return task;
   }
+
+  deleteTask(id: string) {
+    this.tasks = this.tasks.filter((task) => task.id !== id);
+  }
+
+  updateTask(id: string, status: TaskStatus) {
+    const task = this.tasks.find((task) => task.id === id);
+    task.status = status;
+    return task;
+  }
 }
