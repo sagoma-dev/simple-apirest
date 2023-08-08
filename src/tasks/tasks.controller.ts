@@ -9,7 +9,8 @@ import {
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/task.dto';
-import { TaskStatus } from './task.entity';
+import { validateTask, validatePartialTask } from './task.schema';
+import { Task } from './task.entity';
 
 @Controller('tasks')
 export class TasksController {
@@ -22,7 +23,12 @@ export class TasksController {
 
   @Post()
   createTask(@Body() newTask: CreateTaskDto) {
-    return this.tasksService.createTask(newTask.title, newTask.description);
+    const result = validateTask(newTask);
+    if (!result.success) {
+      return;
+    }
+
+    return this.tasksService.createTask(result.data);
   }
 
   @Delete(':id')
@@ -31,7 +37,11 @@ export class TasksController {
   }
 
   @Patch(':id')
-  updateTask(@Param('id') id: string, @Body() updateTask: any) {
-    return this.tasksService.updateTask(id, updateTask);
+  updateTask(@Param('id') id: string, @Body() updateTask: Partial<Task>) {
+    const result = validatePartialTask(updateTask);
+    if (!result.success) {
+      return;
+    }
+    return this.tasksService.updateTask(id, result.data);
   }
 }

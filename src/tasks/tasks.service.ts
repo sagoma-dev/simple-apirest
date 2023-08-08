@@ -17,12 +17,10 @@ export class TasksService {
     return this.tasks;
   }
 
-  createTask(title: string, description: string) {
+  createTask(newTask) {
     const task = {
       id: randomUUID(),
-      title,
-      description,
-      status: TaskStatus.PENDING,
+      ...newTask,
     };
 
     this.tasks.push(task);
@@ -34,9 +32,17 @@ export class TasksService {
     this.tasks = this.tasks.filter((task) => task.id !== id);
   }
 
-  updateTask(id: string, status: TaskStatus) {
-    const task = this.tasks.find((task) => task.id === id);
-    task.status = status;
-    return task;
+  updateTask(id: string, input: Partial<Task>) {
+    const task = this.tasks.findIndex((task) => task.id === id);
+    if (task === -1) {
+      return;
+    }
+
+    this.tasks[task] = {
+      ...this.tasks[task],
+      ...input,
+    };
+
+    return this.tasks[task];
   }
 }
